@@ -107,6 +107,9 @@ public:
         bool operator!=(const iterator &b)const{
             return p!=b.p;
         }
+        bool operator==(const iterator &b)const{
+            return p==b.p;
+        }
         iterator &operator++(){
             ++p;
             return *this;
@@ -272,6 +275,9 @@ public:
         bool operator!=(const iterator &b)const{
             return p!=b.p;
         }
+        bool operator==(const iterator &b)const{
+            return p==b.p;
+        }
         iterator &operator++(){
             p=p->nxt;
             return *this;
@@ -301,12 +307,14 @@ public:
         Node *q=it.getNode(),*p=q->pre,*cur=new Node(e);
         cur->nxt=q; cur->pre=p;
         p->nxt=cur; q->pre=cur;
+        ++size;
         return iterator(cur);
     }
     iterator erase(iterator it){
         Node *cur=it.getNode(),*p=cur->pre,*q=cur->nxt;
         delete cur;
         p->nxt=q; q->pre=p;
+        --size;
         return iterator(q);
     }
     iterator push_back(T e){
