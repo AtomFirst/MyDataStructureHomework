@@ -5,6 +5,8 @@ do
     echo "(input$i)"
     cat input/in$i.txt
     echo -e "\n(p$i 's output)"
+    g++ -o p$i ADTList.cpp p$i.cpp
     ./p$i < input/in$i.txt
+    rm p$i
     echo "---"
 done
