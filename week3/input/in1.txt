@@ -1,0 +1,51 @@
+50
+getTop
+pop
+pop
+clear
+getTop
+pop
+push 5
+pop
+getTop
+clear
+push 95
+traverse
+getTop
+pop
+clear
+clear
+pop
+empty
+push 100
+clear
+push 7
+traverse
+push 4
+getTop
+empty
+pop
+length
+length
+getTop
+traverse
+length
+push 82
+push 20
+clear
+getTop
+length
+length
+traverse
+traverse
+length
+push 40
+clear
+empty
+length
+clear
+push 70
+traverse
+clear
+getTop
+push 19

@@ -1,0 +1,51 @@
+50
+length
+length
+traverse
+getHead
+clear
+clear
+empty
+dequeue
+empty
+length
+empty
+getHead
+getHead
+getHead
+getHead
+clear
+length
+dequeue
+dequeue
+enqueue 43
+enqueue 51
+enqueue 25
+empty
+traverse
+empty
+enqueue 60
+getHead
+enqueue 63
+dequeue
+traverse
+getHead
+getHead
+length
+empty
+length
+length
+clear
+empty
+clear
+dequeue
+length
+length
+dequeue
+clear
+enqueue 9
+enqueue 59
+length
+enqueue 58
+traverse
+dequeue
