@@ -7,6 +7,7 @@
 3. [Report](./report/): A Method to solve some problems without recursion.
 4. [Week3](./week3/): Stack and Queue.
 5. [Week4](./week4/): Little Matrix.
+6. [Week5](./week5/): Binary Tree.
 
 ## Use:
 
