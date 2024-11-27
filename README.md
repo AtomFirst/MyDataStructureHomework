@@ -9,6 +9,7 @@
 5. [Week4](./week4/): Little Matrix.
 6. [Week5](./week5/): Binary Tree.
 7. [Week6](./week6/): Simple Graph.
+8. [Week7](./week7/): Graph too.
 
 ## Use:
 
