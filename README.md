@@ -10,6 +10,7 @@
 6. [Week5](./week5/): Binary Tree.
 7. [Week6](./week6/): Simple Graph.
 8. [Week7](./week7/): Graph too.
+9. [Week8](./week8/): Simple Sort.
 
 ## Use:
 
