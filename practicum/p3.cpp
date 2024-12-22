@@ -5,16 +5,13 @@
 #include<stdlib.h>
 using namespace std;
 
-struct Date{
-    int year,month,day;
+struct Date{    
     auto operator<=>(const Date&) const=default;
+
+    int year,month,day;
 };
 
 struct People{
-    string name,address;
-    Date date_of_birth,date_of_death;
-    bool married,alive;
-
     friend istream& operator>>(istream& in,People &p){
 
         return in;
@@ -24,6 +21,10 @@ struct People{
 
         return out;
     }
+    
+    string name,address;
+    Date date_of_birth,date_of_death;
+    bool married,alive;
 };
 
 template<typename T>
@@ -36,6 +37,7 @@ struct Node{
     T elem;
 };
 
+// print family tree
 class Printer{
 public:
     Printer():unicode_table{{"lr","─"},{"ud","│"},{"udr","├"},{"ur","└"}}{
@@ -54,6 +56,7 @@ public:
     }
 
 private:
+    // partition each characters
     static vector<string> norm(const string &s){
         vector<string>res;
 
@@ -68,6 +71,7 @@ private:
         return res;
     }
 
+    // draw the tree in buffer
     pair<int,int> draw(Node<string>* root,int sx,int sy){
         if(root==nullptr) return {0,0};
 

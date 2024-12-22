@@ -21,6 +21,7 @@ struct BiNode{
 };
 
 map<char,string> HuffmanCoding(const map<char,int>& cnt){
+    // build a Huffman tree
     priority_queue<pair<int,BiNode<char>*>>q;
     
     for(auto [ch,freq]:cnt)
@@ -35,6 +36,7 @@ map<char,string> HuffmanCoding(const map<char,int>& cnt){
         q.emplace(f1+f2,ht);
     }
 
+    // get Huffman coding from tree
     auto root=q.top().second; q.pop();
 
     map<char,string>res;
@@ -61,12 +63,20 @@ map<char,string> HuffmanCoding(const map<char,int>& cnt){
     return res;
 }
 
-void encode(){
+bool encode(){
     ifstream fin("input/source.txt",ios::in);
+
+    if(!fin.is_open()){
+        cerr<<"Cannot open input/source.txt!\n";
+        return false;
+    }
+
+    // calculate the frequency of each characters
     map<char,int>cnt{{'\0',1}};
     for(char ch;fin.get(ch);) 
         ++cnt[ch];
     
+    // save the coding
     auto ch2code=HuffmanCoding(cnt);
     ofstream fout1("Huffman.txt",ios::out);
 
@@ -84,11 +94,13 @@ void encode(){
 
     fout1.close();
 
+    // calculate the size of code
     int len=ch2code['\0'].length();
     fin.clear(); fin.seekg(0);
     for(char ch;fin.get(ch);)
         len+=ch2code[ch].length();
 
+    // encode
     int siz=(len+7)>>3;
     char* buffer=new char[siz]();
     fin.clear(); fin.seekg(0);
@@ -104,21 +116,32 @@ void encode(){
 
     fin.close();
 
+    // add EOF
     for(auto bit:ch2code['\0']){
         if(bit=='1')
             buffer[i>>3]|=1<<(i&7);
         ++i;
     }
 
+    // write into "code.dat"
     ofstream fout2("code.dat",ios::out|ios::binary);
     fout2.write(buffer,(len+7)/8);
     fout2.close();
 
     delete [] buffer;
+
+    return true;
 }
 
-void decode(){
+bool decode(){
+    // build tree from "Huffman.txt"
     ifstream fin1("Huffman.txt",ios::in);
+    
+    if(!fin1.is_open()){
+        cerr<<"Cannot open Huffman.txt!\n";
+        return false;
+    }
+    
     auto root=new BiNode<char>(-1);
 
     for(string s,code,freq;fin1>>s>>freq>>code;){
@@ -147,7 +170,14 @@ void decode(){
 
     fin1.close();
 
+    // decode
     ifstream fin2("code.dat",ios::in|ios::binary);
+
+    if(!fin2.is_open()){
+        cerr<<"Cannot open code.dat!\n";
+        return false;
+    }
+
     ofstream fout("recode.txt",ios::out);
     auto cur=root; bool end=0;
 
@@ -170,14 +200,16 @@ void decode(){
     fin2.close(); 
     fout.close();
     delete root;
+
+    return true;
 }
 
 int main(){
-    encode(); 
-    cout<<"Encode succeed!\n";
+    if(encode()) 
+        cout<<"Encode succeed!\n";
     
-    decode(); 
-    cout<<"Decode succeed!\n";
+    if(decode())
+        cout<<"Decode succeed!\n";
 
     return 0;
 }
