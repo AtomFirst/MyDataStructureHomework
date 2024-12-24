@@ -9,8 +9,13 @@ using namespace std;
 
 class BusMap{
 public:
-    void load_data(const char filename[]){
+    bool load_data(const char filename[]){
         ifstream fin(filename,ios::in);
+
+        if(!fin.is_open()){
+            cerr<<"Cannot open "<<filename<<"!\n";
+            return false;
+        }
 
         //线路名 站点 公交线路ID 线内ID 站点ID
         string line,station;
@@ -25,6 +30,8 @@ public:
         }
 
         fin.close();
+
+        return true;
     }
 
     void ans1(){
@@ -101,7 +108,10 @@ int main(){
     BusMap busmap;
     
     cout<<"Loading data... ";
-    busmap.load_data("input/南京市公交线路.txt");
+
+    if(!busmap.load_data("input/南京市公交线路.txt"))
+        return 0;
+    
     cout<<"done.\n\n"<<hint;
 
     for(int opt;cin>>opt;){

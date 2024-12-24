@@ -1,4 +1,5 @@
 #include<iostream>
+#include<fstream>
 #include<string>
 #include<vector>
 #include<map>
@@ -8,11 +9,30 @@ using namespace std;
 struct Date{    
     auto operator<=>(const Date&) const=default;
 
+    friend istream& operator>>(istream& in,Date& d){
+        string tmp; in>>tmp;
+
+        if(tmp=="-") d.year=d.month=d.day=-1;
+        else{
+            d.year=d.month=d.day=0;
+            int i=0,n=tmp.length();
+            for(;i<n && isdigit(tmp[i]);++i)
+                d.year=d.year*10+(tmp[i]-'0');
+            for(++i;i<n && isdigit(tmp[i]);++i)
+                d.month=d.month*10+(tmp[i]-'0');
+            for(++i;i<n && isdigit(tmp[i]);++i)
+                d.day=d.day*10+(tmp[i]-'0');
+        }
+
+        return in;
+    }
+
     int year,month,day;
 };
 
 struct People{
     friend istream& operator>>(istream& in,People &p){
+        in>>p.name>>p.date_of_birth>>p.date_of_death;
 
         return in;
     }
@@ -107,7 +127,47 @@ private:
     map<pair<int,int>,string>buffer;
 };
 
+class Genealogy{
+public:
+    Genealogy(): root(nullptr) {}
+
+    bool load_data(const char filename[]){
+        ifstream fin(filename,ios::in);
+
+        if(!fin.is_open()){
+            cerr<<"Cannot open "<<filename<<"!\n";
+            return false;
+        }
+
+        map<string,
+
+        string father;
+        for(;;){
+            
+        }
+
+        fin.close();
+
+        return true;
+    }
+
+
+private:
+    Node<People>* root;
+};
+
+const char hint[]="";
+
 int main(){
+    Genealogy genealogy;
+
+    cout<<"Loading data... ";
+
+    if(!genealogy.load_data("input/家谱.txt"))
+        return 0;
+    
+    cout<<"done.\n\n"<<hint;
+
 /*
     // Printer Test
     Printer p;
