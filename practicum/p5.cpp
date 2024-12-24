@@ -125,7 +125,7 @@ bool encode(){
 
     // write into "code.dat"
     ofstream fout2("code.dat",ios::out|ios::binary);
-    fout2.write(buffer,(len+7)/8);
+    fout2.write(buffer,siz);
     fout2.close();
 
     delete [] buffer;
