@@ -15,15 +15,19 @@ public:
     DSU(int n):fa(n+1){
         iota(all(fa),0);
     }
+    
     int getf(int x){
         return x==fa[x]?x:fa[x]=getf(fa[x]);
     }
+    
     bool conn(int x,int y){
         return getf(x)==getf(y);
     }
+
     void merge(int x,int y){
         fa[getf(x)]=getf(y);
     }
+    
 private:
     vector<int>fa;
 };
@@ -44,6 +48,7 @@ int main(){
     for(auto [u,v,w]:edge){
         if(!dsu.conn(u,v))
             dsu.merge(u,v);
+        
         if(dsu.conn(1,n)){
             cout<<w<<endl;
             return 0;

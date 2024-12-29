@@ -32,21 +32,63 @@ public:
         return false;
     }
 
-private:
-    struct Node{
-        Node(): num(0) {}
-
-        T key[siz-1]; size_t num;
-        Node* child[siz];
-    };
-
     void debug(){
         cerr<<"BTree:\n";
-        //
+        inorder(root,0);
     }
 
-       
-       
+private:
+    struct Node{
+        Node(): num(0){
+            for(auto& p:child)
+                p=nullptr;
+        }
+
+        T key[siz]; size_t num;
+        Node* child[siz+1];
+    };
+
+    Node* _insert(Node* cur,const T& e,bool& overflow,T& up,Node*& right){
+        overflow=false;
+
+        if(cur==nullptr){
+            cur=new Node;
+            cur->num=1;
+            cur->key[0]=e;
+            return cur;
+        }
+
+        if(cur->child[0]!=nullptr){
+            int i;
+            for(i=0;i<num;i++)
+                if(e < cur->key[i])
+                    break;
+
+            bool of; T ne; Node* r;
+            cur->child[i]=_insert(cur->chlid[i],e,of,ne,r);
+
+            if(of){
+                
+            }
+        }
+        
+    }
+
+    void inorder(Node* cur,int d){
+        if(cur==nullptr)
+            return;
+        
+        for(int i=0;i<num;i++){
+            inorder(cur->child[i],d+1);
+            for(int i=0;i<d;i++)
+                cerr<<" ";
+            cerr<<cur->key[i]<<endl;
+        }
+
+        inorder(cur->child[num],d+1);
+    }
+
+    Node* root;   
 };
 
 bool is_prime(int n){
@@ -95,7 +137,7 @@ void test(){
 }
 
 int main(){
-    test();
+    //test();
 
     return 0;
 }
