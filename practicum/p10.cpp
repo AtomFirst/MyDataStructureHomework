@@ -3,6 +3,7 @@
 #include<string>
 #include<cmath>
 #include<map>
+#include<optional>
 #include<sstream>
 #include<iomanip>
 
@@ -43,7 +44,7 @@ istream& operator>>(istream& in,Token& t){
                     point=true,a=1,b=0.1;
                 else{
                     t.type=Token::ERR;
-                    t.var="More than one . in Number!";
+                    t.var="more than one . in Number!";
                     break;
                 }
             }
@@ -82,7 +83,7 @@ istream& operator>>(istream& in,Token& t){
     // Error
     else{
         t.type=Token::ERR;
-        t.var="Invalid character '"+string(1,ch)+"' !";
+        t.var="invalid character '"+string(1,ch)+"' !";
     }
 
     return in;
@@ -106,7 +107,11 @@ map<char,int> priority{
     {'(',0},{')',0}
 };
 
+// a >= b
 bool geq(char opt_a,char opt_b){
+    if(opt_b=='(') return false;
+    if(opt_a=='^' && opt_b=='^') return false;
+    if(opt_a=='=' && opt_b=='=') return false;
     return priority[opt_a]>=priority[opt_b];
 }
 
@@ -122,23 +127,102 @@ double calc(char opt,double a,double b){
     }
 }
 
-class Interpreter{
-public:
-    bool operator()(const string& input,ostream& out){
-        // scanner
-        vector<Token>tokens{Token{.type=Token::OPT,.opt='('}};
-        istringstream stream(input);
+optional<vector<Token>> Scanner(const string& input){
+    vector<Token>tokens{Token{.type=Token::OPT,.opt='('}};
+    istringstream stream(input);
 
-        for(Token t;stream>>t;){
-            if(t.type==Token::ERR){
-                cerr<<"scanner: column "<<stream.tellg()<<": error: "<<t.var<<endl;
-                return false;
-            }
+    for(Token t;stream>>t;){
+        if(t.type==Token::ERR){
+            cerr<<"scanner: column "<<stream.tellg()<<": error: "<<t.var<<endl;
+            return nullopt;
+        }
+        
+        tokens.emplace_back(t);
+    }
+
+    tokens.push_back(Token{.type=Token::OPT,.opt=')'});
+
+    return tokens;
+}
+
+bool VaildChecker(const vector<Token>& tokens){
+    // regular bracket
+    {
+        vector<int>left_bracket;
+        int i;
+        for(i=1;i+1<tokens.size();i++){
+            if(tokens[i].type!=Token::OPT) continue;
+
+            if(tokens[i].opt=='(')
+                left_bracket.emplace_back(i);
             
-            tokens.emplace_back(t);
+            else if(tokens[i].opt==')'){
+                if(left_bracket.size())
+                    left_bracket.pop_back();
+                else{
+                    cerr<<"vaild checker: error: token "<<i<<" : cannot find matched '(' !\n";
+                    return false;
+                }
+            }
         }
 
-        tokens.push_back(Token{.type=Token::OPT,.opt=')'});
+        if(left_bracket.size()){
+            cerr<<"vaild checker: error: token "<<left_bracket.back()<<" : cannot find matched ')' !\n";
+            return false;
+        }
+    }
+
+    // adjacent value
+    auto is_value=[](const Token& t){
+        return t.type==Token::NUM || t.type==Token::VAR;
+    };
+
+    for(int i=0;i+1<tokens.size();i++){
+        auto &left=tokens[i],&right=tokens[i+1];
+
+        if(is_value(left) && is_value(right)){
+            cerr<<"vaild checker: error: token "<<i<<" and token "<<(i+1)<<" : adjacent value!\n";
+            return false;
+        }
+    }
+
+    // bracket edge check
+    auto is_opt=[](const Token& t){
+        return t.type==Token::OPT;
+    };
+    auto is_lb=[&](const Token& t){
+        return is_opt(t) && t.opt=='(';
+    };
+    auto is_rb=[&](const Token& t){
+        return is_opt(t) && t.opt==')';
+    };
+
+    for(int i=1;i+2<tokens.size();i++){
+        auto &left=tokens[i],&right=tokens[i+1];
+        
+        if(is_rb(left) && (!is_opt(right) || is_lb(right))){
+            cerr<<"vaild checker: error: token "<<i<<" and token "<<(i+1)<<" : adjacent value!\n";
+            return false;
+        }
+
+        if(is_lb(right) && (!is_opt(left) || is_rb(left))){
+            cerr<<"vaild checker: error: token "<<i<<" and token "<<(i+1)<<" : adjacent value!\n";
+            return false;
+        }
+    }
+
+    // vaild
+    return true;
+}
+
+class Interpreter{
+public:
+    optional<double> operator()(const string& input,ostream& out){
+        // scanner
+        auto&& _tokens=Scanner(input);
+        if(!_tokens.has_value())
+            return nullopt;
+        auto&& tokens=_tokens.value();
 
         auto ScannerOutput=[&](ostream& out){
             out<<"Scanner:\n    ";
@@ -147,6 +231,10 @@ public:
             out<<endl;
         };
         ScannerOutput(out);
+
+        // vaild checker
+        if(!VaildChecker(tokens))
+            return nullopt;
 
         // parser
         vector<double>val_stack;
@@ -165,7 +253,7 @@ public:
             out<<"\n";
         };
 
-        cout<<"Parser:\n";
+        out<<"Parser:\n";
 
         for(int i=0;const auto &t:tokens){
             bool bracket=(t.opt==')'),
@@ -182,11 +270,6 @@ public:
                     break;
                 
                 case Token::OPT:
-                    if(t.opt=='('){
-                        opt_stack.emplace_back(t.opt);
-                        break;
-                    }
-
                     while(opt_stack.size() && geq(opt_stack.back(),t.opt)){
                         if(opt_stack.back()!='(')
                             StackOutput(out,t.opt),stk=true;
@@ -197,9 +280,10 @@ public:
 
                         if(val_stack.size()<2){
                             cerr<<"parser: error: too many operator!\n";
-                            return false;
+                            return nullopt;
                         }
 
+                        // calculate a @ b
                         double b=val_stack.back(); val_stack.pop_back();
                         double a=val_stack.back(); val_stack.pop_back();
                         id_stack.pop_back(); 
@@ -209,14 +293,15 @@ public:
                         val_stack.emplace_back(c);
                         id_stack.emplace_back(-1);
                         
+                        // update variable
                         if(opt=='='){
                             if(id==-1){
                                 cerr<<"parser : error: cannot assign a lvalue!\n";
-                                return false;
+                                return nullopt;
                             }
                             if(tokens[id].type!=Token::VAR){
                                 cerr<<"parser: "<<"token "<<id<<" : "<<tokens[id]<<" : error: cannot assign a lvalue!\n";
-                                return false;
+                                return nullopt;
                             }
                             vars[tokens[id].var]=c;
                         }
@@ -231,11 +316,15 @@ public:
                     break;
 
                 default: 
-                    cerr<<"parser: "<<"token "<<i<<" : error: invaild token!\n";
-                    return false;
+                    cerr<<"parser: "<<"token "<<i<<" : "<<tokens[i]<<" : error: invaild token!\n";
+                    return nullopt;
             }
 
             ++i;
+        }
+
+        if(opt_stack.size()){
+            cerr<<"parser: error: too many operator!\n";
         }
 
         if(val_stack.size()==0);
@@ -247,7 +336,7 @@ public:
             cerr<<"parser: error: too many number!\n";
         }
 
-        return true;
+        return vars["_"];
     }
 
 private:
@@ -257,7 +346,7 @@ private:
 const char hint[]="\
 Calculater 1.0\n\n\
 Support decimal number and variable.\n\
-Support a+b a-b a*b a/b a^b(power) a=b(assign).\n\
+Support a+b a-b a*b a/b a^b (power) a=b (assign).\n\
 Input formula to calculate.\n\
 Input 'EXIT' to exit this program.\n\
 ---\n\
