@@ -11,9 +11,11 @@ struct BiNode{
     T elem;
     BiNode *left,*right;
 
-    BiNode():left(nullptr),right(nullptr){}
+    BiNode():
+        left(nullptr),right(nullptr){}
 
-    BiNode(const T& elem):elem(elem),left(nullptr),right(nullptr){}
+    BiNode(const T& elem):
+        elem(elem),left(nullptr),right(nullptr){}
 
     ~BiNode(){
         delete left,right;

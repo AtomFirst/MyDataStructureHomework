@@ -9,7 +9,10 @@ using namespace std;
 template<typename T>
 struct SLinkNode{
     SLinkNode(): next(nullptr) {}
-    SLinkNode(const T& elem): elem(elem),next(nullptr) {}
+
+    SLinkNode(const T& elem): 
+        elem(elem),next(nullptr) {}
+    
     ~SLinkNode(){
         delete next;
     }
@@ -19,20 +22,35 @@ struct SLinkNode{
 };
 
 template<typename T>
-void print(SLinkNode<T>* head){
+struct DLinkNode{
+    DLinkNode(): next(nullptr),prev(nullptr) {}
+
+    DLinkNode(const T& elem): 
+        elem(elem),next(nullptr),prev(nullptr) {}
+    
+    ~DLinkNode(){
+        delete next;
+    }
+
+    T elem;
+    DLinkNode *next,*prev;
+};
+
+template<typename T>
+void traverse(SLinkNode<T>* head,auto &&work){
     for(head=head->next;head!=nullptr;head=head->next)
-        cout<<head->elem<<endl;
+        work(head->elem);
 }
 
 template<typename T>
-void BubbleSort(SLinkNode<T>* head,auto cmp){
+void BubbleSort(T* head,auto cmp){
     int len=0;
 
     for(auto p=head->next;p!=nullptr;p=p->next)
         ++len;
     
     for(bool flag=false;len>1 && !flag;--len,flag=false){
-        SLinkNode<T> *p0=head,*p1=p0->next,*p2=p1->next;
+        T *p0=head,*p1=p0->next,*p2=p1->next;
 
         for(int i=0;i+1<len;i++,p0=p1,p1=p2,p2=p2->next)
             if(!cmp(p1->elem,p2->elem)){
@@ -123,7 +141,7 @@ void react(){
 
     auto alive=new SLinkNode<tuple<process,chrono::time_point<chrono::system_clock>>>;
 
-    auto dead=new SLinkNode<tuple<process,chrono::time_point<chrono::system_clock>,chrono::duration<double>>>;
+    auto deadhead=new DLinkNode<tuple<process,chrono::time_point<chrono::system_clock>,chrono::duration<double>>>;
 
     while(true){
         // exit when input 'q'
@@ -138,8 +156,15 @@ void react(){
             return a.mem>b.mem;
         });
 
-        print(cur);
-        return;
+        // TODO
+
+        auto print1=[](auto x){
+            auto [p,t]=x;
+            // TODO
+        };
+
+        traverse(alive,print1);
+        // TODO
     }
 }
 

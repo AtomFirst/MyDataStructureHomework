@@ -109,7 +109,7 @@ int main(){
 
     cout<<"\nInput start_x start_y end_x end_y(input '0 0 0 0' to exit):\n";
 
-    for(int sx,sy,ex,ey;cin>>sx>>sy>>ex>>ey;){
+    for(int sx,sy,ex,ey;cout<<"> ",cin>>sx>>sy>>ex>>ey;){
         if(!sx && !sy && !ex && !ey) break;
 
         if(!in_map(sx,sy)){

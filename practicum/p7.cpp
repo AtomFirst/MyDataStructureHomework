@@ -99,6 +99,7 @@ private:
 };
 
 const char hint[]="\
+Bus Map\n\n\
 MENU:\n\
 1 start_station end_station    output a path from start to end which the number of transfer is mininum\n\
 2 start_station end_station    output a path which go past mininum station\n\
@@ -114,7 +115,7 @@ int main(){
     
     cout<<"done.\n\n"<<hint;
 
-    for(int opt;cin>>opt;){
+    for(int opt;cout<<"> ",cin>>opt;){
         if(opt==0) 
             break;
         else if(opt==1)
