@@ -344,7 +344,7 @@ private:
 };
 
 const char hint[]="\
-Calculater 1.0\n\n\
+Calculator 1.0\n\n\
 Support decimal number and variable.\n\
 Support a+b a-b a*b a/b a^b (power) a=b (assign).\n\
 Input formula to calculate.\n\
