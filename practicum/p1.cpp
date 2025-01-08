@@ -253,6 +253,9 @@ void react(){
         while(kbhit()){
             char c=getch();
             if(c=='q'){
+                delete alive;
+                delete deadhead;
+
                 cout<<"exit"<<endl;
                 return;
             }

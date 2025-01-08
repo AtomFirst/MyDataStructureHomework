@@ -188,6 +188,10 @@ class Genealogy{
 public:
     Genealogy(): root(nullptr) {}
 
+    ~Genealogy(){
+        delete root;
+    }
+
     bool load_data(const char filename[]){
         ifstream fin(filename,ios::in);
 

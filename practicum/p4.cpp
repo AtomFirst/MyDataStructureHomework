@@ -10,6 +10,10 @@ public:
     AVL(): 
         root(nullptr) {}
 
+    ~AVL(){
+        clear();
+    }
+
     bool insert(const T& e){
         if(contains(e))
             return false;
@@ -26,6 +30,12 @@ public:
         root=_erase(root,e);
 
         return true;
+    }
+
+    void clear(){
+        _clear(root);
+
+        root=nullptr;
     }
 
     bool contains(const T& e){
@@ -100,6 +110,16 @@ private:
         cur=AdjustTree(cur);
 
         return cur;
+    }
+
+    void _clear(Node* cur){
+        if(cur==nullptr)
+            return;
+
+        _clear(cur->left);
+        _clear(cur->right);
+
+        delete cur;
     }
 
     // for debug

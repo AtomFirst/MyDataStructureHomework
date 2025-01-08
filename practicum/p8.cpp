@@ -9,6 +9,10 @@ class BTree{
 public:
     BTree(): root(nullptr) {}
 
+    ~BTree(){
+        clear();
+    }
+
     bool insert(const T& e){
         if(contains(e))
             return false;
@@ -34,7 +38,7 @@ public:
         if(!contains(e))
             return false;
 
-        _erase(root,e,nullptr,-1);
+        root=_erase(root,e,nullptr,-1);
 
         return true;
     }
@@ -52,6 +56,12 @@ public:
         }
 
         return false;
+    }
+
+    void clear(){
+        _clear(root);
+
+        root=nullptr;
     }
 
     void debug(){
@@ -154,7 +164,8 @@ private:
         return cur;
     }
 
-    void _erase(Node*& cur,const T& e,Node* parent,int id){
+    Node* _erase(Node* cur,const T& e,Node* parent,int id){
+        Node* _child=nullptr;
         {
             int i;  bool eq=false;
 
@@ -167,11 +178,11 @@ private:
                 }
             
             if(!eq)
-                _erase(cur->child[i],e,cur,i);
+                _child=_erase(cur->child[i],e,cur,i);
             else if(cur->child[0]!=nullptr){
                 T nxt=MinElem(cur->child[i+1]);
                 cur->key[i]=nxt;
-                _erase(cur->child[i+1],nxt,cur,i+1);
+                _child=_erase(cur->child[i+1],nxt,cur,i+1);
             }
             else{
                 //for(int j=i;j< cur->num;j++)
@@ -185,15 +196,18 @@ private:
         const int min_key=(siz+1)/2-1;
 
         if(cur->num >= min_key)
-            return;
+            return cur;
 
         // underflow
 
         // cur is root
         if(parent==nullptr){
-            if(cur->num==0)
-                cur=nullptr;
-            return;
+            if(cur->num==0){
+                delete cur;
+                cur=_child;
+            }
+
+            return cur;
         }
 
         // cur is not root
@@ -220,7 +234,7 @@ private:
             parent->key[id-1]=lsib->key[lsib->num - 1];
             --(lsib->num);
 
-            return;
+            return cur;
         }
 
         // borrow from right sibling
@@ -241,7 +255,7 @@ private:
 
             --(rsib->num);
 
-            return;
+            return cur;
         }
 
         // merge with left sibling
@@ -265,7 +279,7 @@ private:
 
             --(parent->num);
 
-            return;
+            return lsib;
         }
 
         // merge with right sibling
@@ -284,12 +298,23 @@ private:
 
             --(parent->num);
 
-            return;
+            return cur;
         }
-
 
         // error
         cerr<<"_erase() underflow and cannot fix!"<<endl;
+
+        return nullptr;
+    }
+
+    void _clear(Node* cur){
+        if(cur==nullptr) 
+            return;
+
+        for(int i=0;i <= cur->num;i++)
+            _clear(cur->child[i]);
+        
+        delete cur;
     }
 
     T MinElem(Node* cur){
