@@ -60,6 +60,7 @@ map<char,string> HuffmanCoding(const map<char,int>& cnt){
     };
 
     dfs(dfs,root);
+    
     delete root;
 
     return res;
@@ -80,6 +81,7 @@ bool encode(){
     
     // save the coding
     auto ch2code=HuffmanCoding(cnt);
+    
     ofstream fout1("Huffman.txt",ios::out);
 
     for(auto [ch,freq]:cnt){
@@ -127,6 +129,7 @@ bool encode(){
 
     // write into "code.dat"
     ofstream fout2("code.dat",ios::out|ios::binary);
+    
     fout2.write(buffer,siz);
     fout2.close();
 
@@ -156,6 +159,7 @@ bool decode(){
             ch=' ';
 
         auto cur=root;
+        
         for(auto bit:code)
             if(bit=='0'){
                 if(cur->left==nullptr)
@@ -181,6 +185,7 @@ bool decode(){
     }
 
     ofstream fout("recode.txt",ios::out);
+    
     auto cur=root; bool end=0;
 
     for(char buffer;fin2.read(&buffer,1) && !end;){
@@ -201,6 +206,7 @@ bool decode(){
 
     fin2.close(); 
     fout.close();
+    
     delete root;
 
     return true;

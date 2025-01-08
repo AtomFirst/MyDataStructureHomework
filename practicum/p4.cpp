@@ -1,12 +1,14 @@
 #include<iostream>
 #include<fstream>
+#include<string>
 
 using namespace std;
 
 template<typename T>
 class AVL{
 public:
-    AVL(): root(nullptr) {}
+    AVL(): 
+        root(nullptr) {}
 
     bool insert(const T& e){
         if(contains(e))
@@ -40,6 +42,12 @@ public:
         return false;
     }
 
+    void debug(){
+        cerr<<"AVL:\n";
+        
+        LrR(root,0);
+    }
+
 private:
     struct Node{
         Node(const T& elem): elem(elem),left(nullptr),right(nullptr),height(1),balance(0) {}
@@ -47,11 +55,6 @@ private:
         T elem; int height,balance;
         Node *left,*right;
     };
-
-    void debug(){
-        cerr<<"AVL:\n";
-        LrR(root,0);
-    }
 
     Node* _insert(Node* cur,const T& e){
         if(cur==nullptr)
@@ -104,13 +107,15 @@ private:
         if(cur==nullptr)
             return;
         
-        LrR(cur->right,d+1);
+        LrR(cur->left,d+1);
 
-        for(int i=0;i<d;i++)
+        const int w=4;
+
+        for(int i=0;i<d*w;i++)
             cerr<<" ";
         cerr<<(cur->elem)<<":"<<(cur->balance)<<endl;
         
-        LrR(cur->left,d+1);
+        LrR(cur->right,d+1);
     }
 
     Node* AdjustTree(Node* cur){
@@ -156,7 +161,9 @@ private:
     }
 
     T MaxElem(Node* cur){
-        while(cur->right) cur=cur->right;
+        while(cur->right) 
+            cur=cur->right;
+        
         return cur->elem;
     }
 
@@ -193,8 +200,10 @@ void test(){
             st.insert(i);
 
     fout.open("tree1.txt",ios::out);
+
     for(int i=200;i<=300;i++)
         fout<<i<<" "<<(st.contains(i)?"yes":"no")<<endl;
+    
     fout.close();
 
     for(int i=500;i<=2000;i++)
@@ -202,24 +211,70 @@ void test(){
             st.erase(i);
     
     fout.open("tree2.txt",ios::out);
+    
     for(int i=600;i<=700;i++)
         if(is_prime(i))
             fout<<i<<" "<<(st.contains(i)?"yes":"no")<<endl;
+    
     fout.close();
 
     for(int i=2;i<=1000;i+=2)
         st.insert(i);
 
     fout.open("tree3.txt",ios::out);
+    
     for(int i=100;i<=200;i+=2)
         fout<<i<<" "<<(st.contains(i)?"yes":"no")<<endl;
+    
     fout.close();
 
     cout<<"Test done.\n";
+
+    //st.debug();
+}
+
+const char hint[]="\
+AVL Tree\n\n\
+MENU:\n\
++ x    insert x\n\
+- x    erase x\n\
+? x    query x\n\
+p      print tree\n\
+q      quit\n\n";
+
+void Interactive(){
+    cout<<hint;
+
+    AVL<int>st;
+
+    for(string str;cout<<"> ",cin>>str;)
+        if(str=="+"){
+            int x; cin>>x;
+            if(!st.insert(x))
+                cout<<"already existed!"<<endl;
+        }else if(str=="-"){
+            int x; cin>>x;
+            if(!st.erase(x))
+                cout<<"not found!"<<endl;
+        }else if(str=="?"){
+            int x; cin>>x;
+            cout<<(st.contains(x)?"existed":"not existed")<<endl;
+        }else if(str=="p"){
+            st.debug();
+        }else if(str=="q"){
+            return;
+        }else{
+            cout<<"invaild input!"<<endl;
+        }
 }
 
 int main(){
+
+#ifdef INTERACT
+    Interactive();
+#else
     test();
+#endif
 
     return 0;
 }

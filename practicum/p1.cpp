@@ -13,10 +13,10 @@
 
 using namespace std;
 
-// erase element if work return true
 template<typename T>
 struct SLinkNode{
-    SLinkNode(): next(nullptr) {}
+    SLinkNode(): 
+        next(nullptr) {}
 
     SLinkNode(const T& elem): 
         elem(elem),next(nullptr) {}
@@ -31,7 +31,8 @@ struct SLinkNode{
 
 template<typename T>
 struct DLinkNode{
-    DLinkNode(): next(nullptr),prev(nullptr) {}
+    DLinkNode(): 
+        next(nullptr),prev(nullptr) {}
 
     DLinkNode(const T& elem): 
         elem(elem),next(nullptr),prev(nullptr) {}
@@ -44,6 +45,7 @@ struct DLinkNode{
     DLinkNode *next,*prev;
 };
 
+// erase element if work return true
 template<typename T>
 void traverse(SLinkNode<T>* head,int count,auto &&work){
     for(SLinkNode<T> *prev=head,*cur=prev->next;
@@ -59,6 +61,7 @@ void traverse(SLinkNode<T>* head,int count,auto &&work){
             }
 }
 
+// erase element if work return true
 template<typename T>
 void traverse(DLinkNode<T>* head,int count,auto &&work){
     for(DLinkNode<T> *prev=head,*cur=prev->next;
@@ -74,7 +77,22 @@ void traverse(DLinkNode<T>* head,int count,auto &&work){
             }
 }
 
-int list_length(auto list){
+template<typename T>
+int list_length(SLinkNode<T>* list){
+    int len=0;
+    
+    auto counter=[&](auto &&x){
+        ++len;
+        return false;
+    };
+
+    traverse(list,1e9,counter);
+
+    return len;
+}
+
+template<typename T>
+int list_length(DLinkNode<T>* list){
     int len=0;
     
     auto counter=[&](auto &&x){
@@ -133,7 +151,10 @@ void BubbleSort(DLinkNode<T>* head,auto cmp){
 
 struct process{
     friend ostream& operator<<(ostream& out,const process& p){
-        return out<<"PID: "<<p.pid<<", NAME: "<<p.name<<", MEM(K): "<<p.mem;
+        return 
+            out<<"PID: "<<p.pid
+                <<", NAME: "<<p.name
+                <<", MEM(K): "<<p.mem;
     }
 
     int pid;
@@ -167,10 +188,17 @@ SLinkNode<process>* GetProcess(){
 
 #if defined(__linux__)
     fin.getline(buf,0x3ff,'\n');
-    for(process p;fin>>buf>>p.pid>>buf>>buf>>buf>>p.mem>>buf>>buf>>buf>>buf>>p.name;fin.getline(buf,0x3ff,'\n')){
-        auto cur=new SLinkNode<process>(p);
-        cur->next=res; res=cur;
-    }
+    for(process p;
+        fin>>buf
+            >>p.pid
+            >>buf>>buf>>buf
+            >>p.mem
+            >>buf>>buf>>buf>>buf
+            >>p.name;
+        fin.getline(buf,0x3ff,'\n')){
+            auto cur=new SLinkNode<process>(p);
+            cur->next=res; res=cur;
+        }
 #elif defined(_WIN32)
     for(process p;fin.getline(buf,0x3ff,'\n');){
         // get data from csv
@@ -186,6 +214,7 @@ SLinkNode<process>* GetProcess(){
                 p.pid=stoi(string(buf+l,buf+r));
             else if(j==4){
                 p.mem=0;
+
                 for(int k=l;k<r;k++)
                     if(isdigit(buf[k]))
                         p.mem=p.mem*10+(buf[k]-'0');
@@ -249,7 +278,10 @@ void react(){
         
         cout<<"count: "<<(++cnt)<<endl;
 
-        cout<<"Alive Process (head "<<max_rows<<", all: "<<list_length(cur)<<"):"<<endl;
+        cout<<"Alive Process (head "<<max_rows
+            <<", all: "<<list_length(cur)<<"):"
+            <<endl;
+        
         traverse(cur,max_rows,[](const process& p){
             cout<<p<<endl;
             return false;
@@ -333,7 +365,10 @@ void react(){
         });
 
         // print dead process list
-        cout<<endl<<"Dead Process (head "<<max_rows<<", all: "<<list_length(deadhead)<<"):"<<endl;
+        cout<<endl<<"Dead Process (head "<<max_rows
+            <<", all: "<<list_length(deadhead)<<"):"
+            <<endl;
+        
         traverse(deadhead,max_rows,[](const process_end_dur& ped){
             const auto &[p,e,d]=ped;
 

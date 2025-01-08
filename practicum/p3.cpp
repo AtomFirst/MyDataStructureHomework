@@ -17,7 +17,8 @@ struct Date{
         if(*this==Date()) 
             return "-";
 
-        return to_string(year)
+        return 
+            to_string(year)
             + "-" + to_string(month)
             + "-" + to_string(day);
     }
@@ -50,7 +51,8 @@ ostream& operator<<(ostream& out,const Date& d){
     if(d==Date()) 
         return out<<"-";
 
-    return out<<d.year
+    return 
+        out<<d.year
         <<"-"<<d.month
         <<"-"<<d.day;
 }

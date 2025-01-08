@@ -190,9 +190,11 @@ bool VaildChecker(const vector<Token>& tokens){
     auto is_opt=[](const Token& t){
         return t.type==Token::OPT;
     };
+    
     auto is_lb=[&](const Token& t){
         return is_opt(t) && t.opt=='(';
     };
+    
     auto is_rb=[&](const Token& t){
         return is_opt(t) && t.opt==')';
     };
@@ -220,16 +222,21 @@ public:
     optional<double> operator()(const string& input,ostream& out){
         // scanner
         auto&& _tokens=Scanner(input);
+        
         if(!_tokens.has_value())
             return nullopt;
+        
         auto&& tokens=_tokens.value();
 
         auto ScannerOutput=[&](ostream& out){
             out<<"Scanner:\n    ";
+            
             for(int i=1;i+1<tokens.size();i++)
                 out<<tokens[i]<<' ';
+            
             out<<endl;
         };
+        
         ScannerOutput(out);
 
         // vaild checker
@@ -242,15 +249,19 @@ public:
         vector<char>opt_stack;
 
         auto StackOutput=[&](ostream& out,char opt){
-            out<<"--> ";
-            out<<"value: ";
+            out<<"--> "
+                <<"value: ";
+            
             for(auto x:val_stack)
                 out<<x<<" ";
+            
             out<<"\n    operator: ";
+            
             for(auto x:opt_stack) 
                 out<<x<<" ";
-            out<<"{"<<opt<<"}";
-            out<<"\n";
+            
+            out<<"{"<<opt<<"}"
+                <<endl;
         };
 
         out<<"Parser:\n";
@@ -286,10 +297,12 @@ public:
                         // calculate a @ b
                         double b=val_stack.back(); val_stack.pop_back();
                         double a=val_stack.back(); val_stack.pop_back();
+
                         id_stack.pop_back(); 
                         int id=id_stack.back(); id_stack.pop_back();
                         
                         double c=calc(opt,a,b);
+
                         val_stack.emplace_back(c);
                         id_stack.emplace_back(-1);
                         
@@ -299,10 +312,12 @@ public:
                                 cerr<<"parser : error: cannot assign a lvalue!\n";
                                 return nullopt;
                             }
+
                             if(tokens[id].type!=Token::VAR){
                                 cerr<<"parser: "<<"token "<<id<<" : "<<tokens[id]<<" : error: cannot assign a lvalue!\n";
                                 return nullopt;
                             }
+
                             vars[tokens[id].var]=c;
                         }
                     }
@@ -330,7 +345,8 @@ public:
         if(val_stack.size()==0);
         else if(val_stack.size()==1){
             vars["_"]=val_stack.back();
-            out<<setprecision(15)<<vars["_"]<<endl;
+            out<<setprecision(15)<<vars["_"]
+                <<endl;
         }
         else{
             cerr<<"parser: error: too many number!\n";
@@ -358,6 +374,7 @@ void Interactive(){
     Interpreter interpreter;
 
     char buffer[0x100];
+
     while(true){
         cout<<"> ";
         cin.getline(buffer,0xff,'\n');
