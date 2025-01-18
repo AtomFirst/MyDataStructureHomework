@@ -1,6 +1,6 @@
 # MyDataStructureHomework
 
-## Has done
+## Menu:
 
 1. [Week1](./week1/): SquList and LinkList (part1).
 2. [Week2](./week2/): SquList and LinkList (part2).
@@ -19,3 +19,5 @@
 - Oop?
 
 > Should data structure be Oop?
+
+> All solution are coding and testing on WSL:Ubuntu-22.04 with g++. Although most of the codes could compiled and run on any systems, it seems that some trouble with encoding happened when you try to run program with Chinese on Windows.
