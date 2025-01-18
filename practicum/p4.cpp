@@ -127,15 +127,24 @@ private:
         if(cur==nullptr)
             return;
         
-        LrR(cur->left,d+1);
-
         const int w=4;
+#ifdef PPRINT
+        LrR(cur->right,d+1);
+
+        for(int i=0;i<d*w;i++)
+            cerr<<" ";
+        cerr<<(cur->elem)<<":"<<(cur->balance)<<endl;
+        
+        LrR(cur->left,d+1);
+#else
+        LrR(cur->left,d+1);
 
         for(int i=0;i<d*w;i++)
             cerr<<" ";
         cerr<<(cur->elem)<<":"<<(cur->balance)<<endl;
         
         LrR(cur->right,d+1);
+#endif
     }
 
     Node* AdjustTree(Node* cur){

@@ -111,12 +111,7 @@ private:
             cur->child[i]=_insert(cur->child[i],e,of,ne,r);
 
             if(of){
-                //for(int j=cur->num - 1;j>=i;j--)
-                //    cur->key[j+1]=cur->key[j];
                 SHIFT_RIGHT(cur->key,i,cur->num - 1)
-
-                //for(int j=cur->num;j>i;j--)
-                //    cur->child[j+1]=cur->child[j];
                 SHIFT_RIGHT(cur->child,i+1,cur->num)
 
                 cur->key[i]=ne;
@@ -133,8 +128,6 @@ private:
                 if(e < cur->key[i])
                     break;
             
-            //for(int j=cur->num - 1;j>=i;j--)
-            //    cur->key[j+1]=cur->key[j];
             SHIFT_RIGHT(cur->key,i,cur->num - 1)
 
             cur->key[i]=e;
@@ -152,12 +145,7 @@ private:
             right=new Node;
             right->num=siz-mid-1;
 
-            //for(int i=0;i < right->num;i++)
-            //    right->key[i]=cur->key[mid+1+i];
             MOVE(right->key,cur->key +mid+1,0,right->num - 1)
-
-            //for(int i=0;i <= right->num;i++)
-            //    right->child[i]=cur->child[mid+1+i];
             MOVE(right->child,cur->child +mid+1,0,right->num)
         }
 
@@ -185,8 +173,6 @@ private:
                 _child=_erase(cur->child[i+1],nxt,cur,i+1);
             }
             else{
-                //for(int j=i;j< cur->num;j++)
-                //    cur->key[j]=cur->key[j+1];
                 SHIFT_LEFT(cur->key,i+1,cur->num -1)
                 
                 --(cur->num);
@@ -219,12 +205,7 @@ private:
         
         // borrow from left sibling
         if(hasl && lsib->num > min_key){
-            //for(int i=cur->num - 1;i>=0;i--)
-            //    cur->key[i+1]=cur->key[i];
             SHIFT_RIGHT(cur->key,0,cur->num - 1)
-
-            //for(int i=cur->num;i>=0;i--)
-            //    cur->child[i+1]=cur->child[i];
             SHIFT_RIGHT(cur->child,0,cur->num)
 
             cur->key[0]=parent->key[id-1];
@@ -245,12 +226,7 @@ private:
 
             parent->key[id]=rsib->key[0];
 
-            //for(int i=0;i < rsib->num;i++)
-            //    rsib->key[i]=rsib->key[i+1];
             SHIFT_LEFT(rsib->key,1,rsib->num - 1)
-
-            //for(int i=0;i <= rsib->num;i++)
-            //    rsib->child[i]=rsib->child[i+1];
             SHIFT_LEFT(rsib->child,1,rsib->num)
 
             --(rsib->num);
@@ -262,12 +238,7 @@ private:
         if(hasl){
             lsib->key[lsib->num]=parent->key[id-1];
 
-            //for(int i=0;i < cur->num;i++)
-            //    lsib->key[lsib->num +1+i]=cur->key[i];
             MOVE(lsib->key + lsib->num +1,cur->key,0,cur->num - 1)
-
-            //for(int i=0;i <= cur->num;i++)
-            //   lsib->child[lsib->num +1+i]=cur->child[i];
             MOVE(lsib->child + lsib->num +1,cur->child,0,cur->num)
 
             lsib->num += 1 + cur->num;
@@ -330,6 +301,29 @@ private:
         
         const int w=6;
 
+#ifdef PPRINT
+        for(int i=cur->num - 1;i>=0;--i){
+            inorder(cur->child[i+1],d+1);
+            
+            for(int i=0;i<d*w;i++)
+                cerr<<" ";
+            
+            if(cur->num > 1){
+                if(i==cur->num - 1) 
+                    cerr<<"^";
+                else if(i==0)
+                    cerr<<"v";
+                else
+                    cerr<<"~";
+            }else
+                cerr<<"o";
+
+            cerr<<setw(3)<<cur->key[i];
+            cerr<<endl;
+        }
+
+        inorder(cur->child[0],d+1);
+#else
         for(int i=0;i < cur->num;i++){
             inorder(cur->child[i],d+1);
             
@@ -351,6 +345,7 @@ private:
         }
 
         inorder(cur->child[cur->num],d+1);
+#endif
     }
 
     Node* root;   
@@ -444,7 +439,68 @@ void Interactive(){
         }
 }
 
+
+#include<set>
+#include<random>
+#include<cstdlib>
+void duipai(){
+    int max_size=0;
+    const int val=131;
+
+    set<int>st1;
+    BTree<int,5>st2;
+
+    //for(int i=0;i<val;i+=2)
+      //  st1.insert(i),
+        //st2.insert(i);
+    
+    mt19937 rnd(114);
+    auto f=[&](bool f){
+        int opt=rnd()%4;
+        if(f){
+            if(opt==2 || opt==3) opt=0;
+        }
+        int x=rnd()%val;
+
+        if(opt==0)
+            st1.insert(x),
+            st2.insert(x);
+        else
+            st1.erase(x),
+            st2.erase(x);
+
+        max_size=max(max_size,(int)st1.size());
+        system("clear");
+        cout<<"max_size="<<max_size<<" cur_size="<<st1.size()<<endl;
+    };
+
+    auto diff=[&](){
+        for(int i=0;i<val;i++){
+            bool has1=st1.contains(i);
+            bool has2=st2.contains(i);
+
+            if(has1!=has2){
+                cerr<<"i="<<i<<endl<<has1<<has2<<endl;
+                exit(-1);
+            }
+        }
+    };
+
+    for(int i=0;true;i++){
+        if(i%10==0) diff();
+        f(i/1000%2==0);
+        if(i==4000) break;
+    }
+
+    st2.debug();
+}
+
+
 int main(){
+#ifdef DUIPAI
+    duipai();
+    return 0;
+#endif
 
 #ifdef INTERACT
     Interactive();

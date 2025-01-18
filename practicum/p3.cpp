@@ -4,6 +4,7 @@
 #include<vector>
 #include<queue>
 #include<map>
+#include<algorithm>
 
 using namespace std;
 
@@ -119,7 +120,7 @@ public:
     Printer():
         unicode_table{{"lr","─"},{"ud","│"},{"udr","├"},{"ur","└"}}{
 #if defined(_WIN32)
-        system("chcp 65001");
+        //system("chcp 65001");
 #endif
     }
 
@@ -613,6 +614,10 @@ exit
 */
 
 int main(){
+#if defined(_WIN32)
+    system("chcp 65001");
+#endif
+
     cout<<"Loading data... ";
 
     if(!genealogy.load_data("input/家谱.txt"))
